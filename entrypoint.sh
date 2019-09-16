@@ -7,6 +7,7 @@ IFS=':' read -ra ADDR <<< "$DOMAINS"
 for DOMAIN in "${ADDR[@]}"; do
     if [ ! -d "/etc/letsencrypt/live/$DOMAIN" ]
     then
+        echo "Requesting new certificate for $DOMAIN"
         certbot \
             certonly \
             --text \
@@ -22,6 +23,9 @@ done
 
 # renew once a day
 while true; do
+    certbot renew \
+        --noninteractive \
+        --quiet \
+        --renew-hook "echo Renewed $RENEWED_DOMAINS"
     sleep 86400
-    certbot renew -q -n
 done
